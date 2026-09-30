@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIMPLI-Order — Demo Integrasi Sistem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1E2761; --navy-dark:#141B4D; --ice:#CADCFC; --white:#fff;
+  --ink:#1F2430; --mute:#5B6478; --card:#F4F6FC; --good:#1E7A4C; --good-bg:#E4F5EA;
+  --warn:#C1121F; --warn-bg:#FBE4E4; --border:#E4E8F5;
+  --font-h:'Fraunces',Georgia,serif; --font-b:'Inter',system-ui,sans-serif; --font-m:'IBM Plex Mono',Consolas,monospace;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  box-sizing:border-box;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--white);color:var(--ink);font-family:var(--font-b);line-height:1.45}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.wrap{max-width:1180px;margin:0 auto;padding:0 1.2rem 3rem}
+header.top{background:var(--navy);color:var(--white);padding:1.6rem 1.2rem 1.9rem}
+header.top .in{max-width:1180px;margin:0 auto}
+h1{font-family:var(--font-h);font-size:clamp(1.6rem,3.3vw,2.3rem);margin:.15rem 0 .3rem;font-weight:700}
+.tag{color:var(--ice);font-size:.95rem;max-width:640px}
+.badge{display:inline-block;margin-top:.9rem;background:var(--navy-dark);border:1px solid #3A4696;color:var(--ice);font-size:.78rem;padding:.35rem .7rem;border-radius:999px}
+.flow{display:flex;align-items:center;gap:.5rem;margin-top:1.5rem;flex-wrap:wrap}
+.node{background:var(--navy-dark);border:1px solid #333f8f;border-radius:.6rem;padding:.55rem .9rem;font-size:.85rem;font-weight:600;transition:box-shadow .25s,background .25s}
+.node.active{background:#2b3690;box-shadow:0 0 0 3px rgba(202,220,252,.35)}
+.arrow{color:#8894DD;font-size:1.1rem}
+h2{font-family:var(--font-h);font-size:1.3rem;margin:2.2rem 0 .2rem}
+.sub{color:var(--mute);font-size:.9rem;margin-bottom:1rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.panel{background:var(--card);border-radius:.7rem;padding:1.1rem}
+label{display:block;font-size:.82rem;font-weight:600;color:var(--mute);margin:.6rem 0 .25rem}
+select,input[type=text],input[type=number]{width:100%;padding:.5rem .6rem;border:1px solid var(--border);border-radius:.4rem;font-family:var(--font-b);font-size:.92rem;background:var(--white)}
+.chk{display:flex;align-items:center;gap:.45rem;margin-top:.7rem;font-size:.85rem}
+button{cursor:pointer;border:none;border-radius:.45rem;font-family:var(--font-b);font-weight:600;font-size:.88rem;padding:.6rem 1rem}
+.btn-primary{background:var(--navy);color:#fff;margin-top:1rem;width:100%}
+.btn-primary:hover{background:#141b4d}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
+.stockrow{display:flex;justify-content:space-between;gap:.6rem;margin-top:1rem}
+.stock{flex:1;background:var(--white);border:1px solid var(--border);border-radius:.5rem;padding:.55rem .6rem;text-align:center;transition:box-shadow .3s}
+.stock.flash{box-shadow:0 0 0 3px rgba(30,122,76,.35)}
+.stock .n{font-family:var(--font-m);font-weight:600;font-size:1.05rem}
+.stock .l{font-size:.72rem;color:var(--mute)}
+.console{background:var(--navy-dark);border-radius:.7rem;padding:.9rem;height:322px;overflow-y:auto;font-family:var(--font-m);font-size:.76rem}
+.console .row{padding:.32rem 0;border-bottom:1px solid #2a3470;color:#c8d1f5}
+.console .row:last-child{border:none}
+.pill{display:inline-block;border-radius:.3rem;padding:0 .35rem;font-weight:600;margin-right:.35rem}
+.pill.ok{background:var(--good);color:#fff}.pill.err{background:var(--warn);color:#fff}.pill.req{background:#3A4696;color:#fff}
+table{width:100%;border-collapse:collapse;margin-top:.8rem;font-size:.86rem}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border)}
+th{background:var(--navy);color:#fff;font-size:.78rem}
+tr:nth-child(even) td{background:var(--card)}
+.status{font-weight:700}
+.status.pass{color:var(--good)}.status.fail{color:var(--warn)}
+.summary{display:inline-block;background:var(--good-bg);color:var(--good);font-weight:700;padding:.35rem .8rem;border-radius:.4rem;margin-top:.7rem}
+.summary.bad{background:var(--warn-bg);color:var(--warn)}
+.vus-row{display:flex;gap:.6rem;margin:.7rem 0}
+.vus-row button.active{background:var(--navy);color:#fff}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-top:1rem}
+@media (max-width:700px){.metrics{grid-template-columns:1fr 1fr}}
+.mc{background:var(--card);border-radius:.5rem;padding:.7rem;text-align:center}
+.mc b{font-family:var(--font-m);font-size:1.25rem;display:block}
+.mc span{font-size:.72rem;color:var(--mute)}
+.note{font-size:.82rem;color:var(--mute);background:var(--card);border-radius:.5rem;padding:.7rem .9rem;margin-top:1rem}
+footer{margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--mute);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <span class="badge">DEMO INTERAKTIF — bukan pengganti hasil resmi di laporan</span>
+  <h1>SIMPLI-Order</h1>
+  <p class="tag">Sistem simulasi integrasi pemesanan & inventori — Client → Order Service → Inventory Service via REST API.</p>
+  <div class="flow">
+    <div class="node" id="n-client">Client</div><div class="arrow">→</div>
+    <div class="node" id="n-order">Order Service :8000</div><div class="arrow">→</div>
+    <div class="node" id="n-inv">Inventory Service :8001</div>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <h2>Kirim Pesanan</h2>
+  <p class="sub">Coba kirim pesanan secara manual dan lihat responsnya langsung dari kedua layanan.</p>
+  <div class="grid2">
+    <div class="panel">
+      <label>Produk</label>
+      <select id="pid"><option value="P001">P001 (stok 10)</option><option value="P002">P002 (stok 0)</option><option value="P-LOAD">P-LOAD (stok besar)</option><option value="TIDAK-ADA">TIDAK-ADA (produk tidak ada)</option></select>
+      <label>Jumlah</label>
+      <input type="text" id="qty" value="2" placeholder="mis. 2, atau 'dua' untuk uji tipe salah">
+      <label>Idempotency-Key (opsional)</label>
+      <input type="text" id="idem" placeholder="mis. demo-01">
+      <div class="chk"><input type="checkbox" id="repeat"><label for="repeat" style="margin:0;color:var(--ink);font-weight:400">Kirim ulang dengan key yang sama (uji FT-06)</label></div>
+      <button class="btn-primary" id="send">Kirim Pesanan</button>
+      <div class="stockrow" id="stocks"></div>
+    </div>
+    <div class="panel" style="background:transparent;padding:0">
+      <div class="console" id="log"></div>
+      <button class="btn-ghost" id="dlLog" style="margin-top:.6rem">Unduh Log Aktivitas (.txt)</button>
+    </div>
+  </div>
+
+  <h2>Uji Fungsional Otomatis</h2>
+  <p class="sub">Menjalankan 6 kasus wajib (FT-01–FT-06) berurutan, sama seperti skrip uji_fungsional.py.</p>
+  <button class="btn-primary" id="runFt" style="width:auto">Jalankan 6 Kasus Uji</button>
+  <div id="ftSummary"></div>
+  <table id="ftTable" style="display:none"><thead><tr><th>ID</th><th>Skenario</th><th>Hasil Aktual</th><th>Status</th></tr></thead><tbody></tbody></table>
+  <button class="btn-ghost" id="dlFt" style="display:none;margin-top:.7rem">Unduh Hasil Uji Fungsional (.txt)</button>
+
+  <h2>Uji Beban (versi demo)</h2>
+  <p class="sub">Simulasi burst request paralel di browser. Durasi dipersingkat (4 detik, bukan 60 detik) agar pas untuk presentasi.</p>
+  <div class="note">Ini berjalan di browser satu thread, bukan k6 sungguhan seperti pada laporan — angkanya ilustratif untuk memperlihatkan pola (throughput naik, latensi mulai naik di beban tinggi), bukan pengganti hasil resmi.</div>
+  <div class="vus-row">
+    <button class="btn-ghost" data-vus="1">1 pengguna</button>
+    <button class="btn-ghost" data-vus="5">5 pengguna</button>
+    <button class="btn-ghost" data-vus="10">10 pengguna</button>
+  </div>
+  <div class="metrics" id="metrics" style="display:none"></div>
+  <button class="btn-ghost" id="dlLoad" style="display:none;margin-top:.9rem">Unduh Hasil Uji Beban (.txt)</button>
+
+  <footer>
+    <span>SIMPLI-Order · dibuat untuk mendukung presentasi UTS Integrasi Sistem</span>
+    <button class="btn-ghost" id="reset">Reset Semua Data</button>
+  </footer>
+</div>
+
+<script>
+const initialStock = {P001:10, P002:0, 'P-LOAD':10000000};
+let stock, orders, idemMap, logs, lastFtResults=[];
+let dlCap=null;
+(async()=>{ try{ dlCap = window.claude && window.claude.use ? await claude.use('downloads') : null; }catch(e){ dlCap=null; } })();
+async function doSave(filename, data){
+  if(!dlCap){ alert('Unduh belum tersedia di tampilan ini. Coba lagi sebentar, atau ambil screenshot.'); return; }
+  try{ await dlCap.save({filename, data}); }catch(e){ if(e && e.code!=='declined') alert('Unduh gagal: '+(e.message||e.code||'tidak diketahui')); }
+}
+function resetState(){ stock={...initialStock}; orders={}; idemMap={}; logs=[]; renderStock(); renderLog(); }
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+function uid(){return Math.random().toString(16).slice(2,10);}
+function pulse(id){const el=document.getElementById(id);el.classList.add('active');setTimeout(()=>el.classList.remove('active'),450);}
+
+function pushLog(service,method,path,code,body){
+  logs.push({service,method,path,code,body});
+  if(logs.length>60) logs.shift();
+  renderLog();
+}
+function renderLog(){
+  const el=document.getElementById('log');
+  el.innerHTML = logs.slice().reverse().map(l=>{
+    const pillClass = l.code==null ? 'req' : (l.code<400 ? 'ok':'err');
+    const pillText = l.code==null ? l.service : (l.service+' '+l.code);
+    return `<div class="row"><span class="pill ${pillClass}">${pillText}</span>${l.method} ${l.path} ${l.body?('— '+JSON.stringify(l.body)):''}</div>`;
+  }).join('') || '<div class="row">Belum ada aktivitas. Kirim pesanan untuk mulai.</div>';
+}
+function renderStock(){
+  document.getElementById('stocks').innerHTML = Object.entries(stock).map(([k,v])=>
+    `<div class="stock" id="st-${k}"><div class="n">${v.toLocaleString('id-ID')}</div><div class="l">${k}</div></div>`).join('');
+}
+function flashStock(pid){const el=document.getElementById('st-'+pid); if(el){el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),500);}}
+
+async function getInventory(pid){
+  pulse('n-inv'); await delay(16+Math.random()*8);
+  if(!(pid in stock)) return {code:404, body:{error:'produk tidak ditemukan'}};
+  return {code:200, body:{product_id:pid, stock:stock[pid]}};
+}
+async function reserve(pid,qty){
+  pulse('n-inv'); await delay(16+Math.random()*8);
+  if(stock[pid] < qty) return {code:409, body:{error:'stok tidak cukup', stock:stock[pid]}};
+  stock[pid]-=qty; flashStock(pid); renderStock();
+  return {code:200, body:{product_id:pid, stock:stock[pid]}};
+}
+async function createOrder(pid, qtyRaw, idemKey, silent){
+  pulse('n-order');
+  if(!silent) pushLog('Order','POST','/orders', null, {product_id:pid, quantity:qtyRaw, idem:idemKey||undefined});
+  const qty = typeof qtyRaw==='number' ? qtyRaw : Number(qtyRaw);
+  if(pid===undefined || pid===null || pid==='' || qtyRaw===undefined || qtyRaw===null || qtyRaw===''){
+    const r={code:400, body:{error:'field wajib: product_id, quantity'}}; if(!silent) pushLog('Order','RES','/orders', r.code, r.body); return r;
+  }
+  if(!Number.isFinite(qty) || !Number.isInteger(qty) || qty<=0){
+    const r={code:422, body:{error:'tipe/nilai data tidak valid'}}; if(!silent) pushLog('Order','RES','/orders', r.code, r.body); return r;
+  }
+  if(idemKey && idemMap[idemKey]){
+    const r={code:200, body:orders[idemMap[idemKey]]}; if(!silent) pushLog('Order','RES','/orders', r.code, r.body); return r;
+  }
+  const inv = await getInventory(pid);
+  if(!silent) pushLog('Inventory','GET','/inventory/'+pid, inv.code, inv.body);
+  if(inv.code===404){ const r={code:404, body:inv.body}; if(!silent) pushLog('Order','RES','/orders', r.code, r.body); return r; }
+  if(inv.body.stock < qty){ const r={code:409, body:{error:'stok tidak cukup', stock:inv.body.stock}}; if(!silent) pushLog('Order','RES','/orders', r.code, r.body); return r; }
+  const res = await reserve(pid, qty);
+  if(!silent) pushLog('Inventory','POST','/inventory/'+pid+'/reserve', res.code, res.body);
+  if(res.code!==200){ const r={code:409, body:{error:'stok tidak cukup'}}; if(!silent) pushLog('Order','RES','/orders', r.code, r.body); return r; }
+  const oid=uid();
+  const order={order_id:oid, product_id:pid, quantity:qty, status:'CREATED', remaining_stock:res.body.stock};
+  orders[oid]=order; if(idemKey) idemMap[idemKey]=oid;
+  const r={code:201, body:order}; if(!silent) pushLog('Order','RES','/orders', r.code, r.body);
+  return r;
+}
+
+document.getElementById('send').onclick = async ()=>{
+  const pid=document.getElementById('pid').value, qty=document.getElementById('qty').value, idem=document.getElementById('idem').value.trim();
+  const btn=document.getElementById('send'); btn.disabled=true;
+  await createOrder(pid, qty, idem||undefined);
+  if(document.getElementById('repeat').checked && idem){ await delay(400); await createOrder(pid, qty, idem); }
+  btn.disabled=false;
+};
+
+const ftCases=[
+ ['FT-01','Transaksi valid', ()=>createOrder('P001',2,undefined,true), r=>r.code===201 || r.code===200],
+ ['FT-02','Stok tidak cukup', ()=>createOrder('P001',999,undefined,true), r=>r.code===409||r.code===422],
+ ['FT-03','Produk tidak ditemukan', ()=>createOrder('TIDAK-ADA',1,undefined,true), r=>r.code===404],
+ ['FT-04','Field wajib tidak lengkap', ()=>createOrder('P001',undefined,undefined,true), r=>r.code===400||r.code===422],
+ ['FT-05','Tipe data tidak valid', ()=>createOrder('P001','dua',undefined,true), r=>r.code===400||r.code===422],
+ ['FT-06','Permintaan diulang', async ()=>{const a=await createOrder('P001',1,'demo-ft06',true); const b=await createOrder('P001',1,'demo-ft06',true); return {code:a.code+'→'+b.code, body:b.body, dual:[a,b]};}, r=>String(r.code).includes('201')],
+];
+document.getElementById('runFt').onclick = async ()=>{
+  resetState();
+  const tbl=document.getElementById('ftTable'), tbody=tbl.querySelector('tbody');
+  tbody.innerHTML=''; tbl.style.display='table'; document.getElementById('ftSummary').innerHTML='';
+  document.getElementById('dlFt').style.display='none'; lastFtResults=[];
+  let passN=0;
+  for(const [id,name,fn,check] of ftCases){
+    await delay(350);
+    const r = await fn();
+    const ok = check(r);
+    if(ok) passN++;
+    const desc = typeof r.code==='string' ? `Status ${r.code}, stok akhir ${stock.P001}` : `Status ${r.code}, stok P001 = ${stock.P001}`;
+    const status = ok?'Lulus':'Gagal';
+    lastFtResults.push({id,name,desc,status});
+    tbody.insertAdjacentHTML('beforeend', `<tr><td>${id}</td><td>${name}</td><td>${desc}</td><td class="status ${ok?'pass':'fail'}">${status}</td></tr>`);
+  }
+  document.getElementById('ftSummary').innerHTML = `<div class="summary ${passN===6?'':'bad'}">${passN} / 6 kasus lulus</div>`;
+  document.getElementById('dlFt').style.display='inline-block';
+};
+document.getElementById('dlFt').onclick = ()=>{
+  const header='ID\tSkenario\tHasil Aktual\tStatus\n';
+  const body=lastFtResults.map(r=>`${r.id}\t${r.name}\t${r.desc}\t${r.status}`).join('\n');
+  doSave('hasil-uji-fungsional.txt', header+body);
+};
+document.getElementById('dlLog').onclick = ()=>{
+  const text = logs.map(l=>`[${l.service}] ${l.method} ${l.path} ${l.code??''} ${l.body?JSON.stringify(l.body):''}`).join('\n') || 'Belum ada aktivitas.';
+  doSave('simpli-order-log.txt', text);
+};
+
+let loadResults={};
+document.querySelectorAll('.vus-row button').forEach(btn=>{
+  btn.onclick = async ()=>{
+    document.querySelectorAll('.vus-row button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const vus=Number(btn.dataset.vus);
+    resetState();
+    const DUR=4000; const start=performance.now(); const times=[]; let ok=0, fail=0;
+    async function worker(){
+      while(performance.now()-start < DUR){
+        const t0=performance.now();
+        const r = await createOrder('P-LOAD',1,undefined,true);
+        times.push(performance.now()-t0);
+        if(r.code===201) ok++; else fail++;
+        await delay(100);
+      }
+    }
+    await Promise.all(Array.from({length:vus}, worker));
+    const total=ok+fail, sorted=times.slice().sort((a,b)=>a-b);
+    const avg = times.reduce((a,b)=>a+b,0)/times.length || 0;
+    const p95 = sorted[Math.floor(sorted.length*0.95)] || 0;
+    const secs=(performance.now()-start)/1000;
+    const thr = ok/secs, err = total? (fail/total*100):0;
+    loadResults[vus]={total,ok,fail,avg,p95,thr,err};
+    renderMetrics(vus);
+  };
+});
+function renderMetrics(vus){
+  const r=loadResults[vus]; const el=document.getElementById('metrics'); el.style.display='grid';
+  el.innerHTML = `
+    <div class="mc"><b>${r.total}</b><span>total request</span></div>
+    <div class="mc"><b>${r.avg.toFixed(1)} ms</b><span>rata-rata</span></div>
+    <div class="mc"><b>${r.p95.toFixed(1)} ms</b><span>p95</span></div>
+    <div class="mc"><b>${r.thr.toFixed(2)}/s</b><span>throughput</span></div>`;
+  document.getElementById('dlLoad').style.display='inline-block';
+}
+document.getElementById('dlLoad').onclick = ()=>{
+  const lines=['Beban\tTotal\tBerhasil\tGagal\tRata-rata(ms)\tp95(ms)\tThroughput(req/s)\tError(%)'];
+  Object.keys(loadResults).sort((a,b)=>a-b).forEach(v=>{const r=loadResults[v];
+    lines.push(`${v} pengguna\t${r.total}\t${r.ok}\t${r.fail}\t${r.avg.toFixed(1)}\t${r.p95.toFixed(1)}\t${r.thr.toFixed(2)}\t${r.err.toFixed(2)}`);});
+  doSave('hasil-uji-beban.txt', lines.join('\n'));
+};
+
+document.getElementById('reset').onclick = ()=>{ resetState(); document.getElementById('ftTable').style.display='none'; document.getElementById('ftSummary').innerHTML=''; document.getElementById('dlFt').style.display='none'; document.getElementById('metrics').style.display='none'; document.getElementById('dlLoad').style.display='none'; loadResults={}; lastFtResults=[]; document.querySelectorAll('.vus-row button').forEach(b=>b.classList.remove('active')); };
+
+resetState();
+</script>
+</body>
+</html>
